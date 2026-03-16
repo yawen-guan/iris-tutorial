@@ -45,7 +45,7 @@ From iris.heap_lang Require Import lang notation spawn par.
   interpreter, uncomment the import below.
 *)
 
-(* From iris.unstable.heap_lang Require Import interpreter. *)
+From iris.unstable.heap_lang Require Import interpreter.
 
 (**
   To return to a release version of Iris known to be compatible with the
@@ -76,19 +76,19 @@ Example arith : expr :=
   the execution inside Coq, we can use the [Compute] command. Uncomment
   the command below to see this in action.
 *)
-(* Compute (exec 10 arith). *)
+Compute (exec 10 arith).
 (** Evaluates to [inl #7] *)
 
 Example booleans : expr :=
   (arith = #7) && #true || (#true = #false).
 
-(* Compute (exec 10 booleans). *)
+Compute (exec 10 booleans).
 (** Evaluates to [inl #true] *)
 
 Example if_then_else : expr :=
   if: booleans then #() else #false.
 
-(* Compute (exec 10 if_then_else). *)
+Compute (exec 10 if_then_else).
 (** Evaluates to [inl #()] *)
 
 (**
@@ -103,7 +103,7 @@ Example lets : expr :=
   let: "b" := #2 in
   "a" + "b".
 
-(* Compute (exec 10 lets). *)
+Compute (exec 10 lets).
 (** Evaluates to [inl #6] *)
 
 (**
@@ -115,7 +115,7 @@ Example pairs : expr :=
   let: "p" := (#40, #1 + #1) in
   Fst "p" + Snd "p".
 
-(* Compute (exec 10 pairs). *)
+Compute (exec 10 pairs).
 (** Evaluates to [inl #42] *)
 
 Example tuples : expr :=
@@ -123,7 +123,7 @@ Example tuples : expr :=
   let: "t2" := (((#1, #2), #3), #4) in
   (Snd (Fst (Fst "t1")) = Snd (Fst (Fst "t2"))).
 
-(* Compute (exec 10 tuples). *)
+Compute (exec 10 tuples).
 (** Evaluates to [inl #true] *)
 
 (**
@@ -139,7 +139,7 @@ Example sums : expr :=
   | InjR "n" => "n" + #1
   end.
 
-(* Compute (exec 10 sums). *)
+Compute (exec 10 sums).
 (** Evaluates to [inl #2] *)
 
 Example option : expr :=
@@ -149,7 +149,7 @@ Example option : expr :=
   | SOME "n" => "n" + #1
   end.
 
-(* Compute (exec 10 option). *)
+Compute (exec 10 option).
 (** Evaluates to [inl #2] *)
 
 (**
@@ -166,7 +166,7 @@ Example lambda : expr :=
   let: "compose" := (λ: "f" "g", (λ: "x", "g" ("f" "x"))) in
   ("compose" "add5" "double") #5.
 
-(* Compute (exec 10 lambda). *)
+Compute (exec 10 lambda).
 (** Evaluates to [inl #20] *)
 
 Example recursion : expr :=
@@ -175,7 +175,7 @@ Example recursion : expr :=
   in
   ("fac" #4, "fac" #5).
 
-(* Compute (exec 25 recursion). *)
+Compute (exec 25 recursion).
 (** Evaluates to [inl (#24, #120)] *)
 
 (* ================================================================= *)
@@ -192,7 +192,7 @@ Example alloc : expr :=
   let: "l2" := ref (#0) in
   ("l1", "l2").
 
-(* Compute (exec 10 alloc). *)
+Compute (exec 10 alloc).
 (** Evaluates to [inl (#(Loc 1), #(Loc 2))] *)
 
 (**
@@ -204,7 +204,7 @@ Example load : expr :=
   let: "l" := ref #5 in
   !"l".
 
-(* Compute (exec 10 load). *)
+Compute (exec 10 load).
 (** Evaluates to [inl #5] *)
 
 Example store : expr :=
@@ -212,7 +212,7 @@ Example store : expr :=
   "l" <- #6 ;;
   !"l".
 
-(* Compute (exec 10 store). *)
+Compute (exec 10 store).
 (** Evaluates to [inl #6] *)
 
 (**
@@ -229,14 +229,14 @@ Example cmpxchg_fail : expr :=
   let: "l" := ref #5 in
   CmpXchg "l" #6 #7.
 
-(* Compute (exec 10 cmpxchg_fail). *)
+Compute (exec 10 cmpxchg_fail).
 (** Evaluates to [inl (#5, #false)] *)
 
 Example cmpxchg_suc : expr :=
   let: "l" := ref #5 in
   CmpXchg "l" #5 #7.
 
-(* Compute (exec 10 cmpxchg_suc). *)
+Compute (exec 10 cmpxchg_suc).
 (** Evaluates to [inl (#5, #true)] *)
 
 (**
@@ -257,7 +257,7 @@ Example cas : expr :=
     else
       #().
 
-(* Compute (exec 10 cas). *)
+Compute (exec 10 cas).
 (** Evaluates to [inl (#5, #7)] *)
 
 (* ================================================================= *)
@@ -285,7 +285,7 @@ Example fork : expr :=
   forked threads inside the Iris logic.
 *)
 
-(* Compute (exec 10 fork). *)
+Compute (exec 10 fork).
 (** Evaluates to [inl #5] *)
 
 (**
