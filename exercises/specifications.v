@@ -158,8 +158,9 @@ Example lambda : expr :=
 Lemma lambda_spec : ⊢ WP lambda {{ v, ⌜v = #20⌝ }}.
 Proof.
   rewrite /lambda.
-  (* exercise *)
-Admitted.
+  wp_pures.
+  iModIntro. iPureIntro. reflexivity.
+Qed.
 
 (* ================================================================= *)
 (** ** Resources *)
@@ -297,8 +298,9 @@ Proof.
   wp_cmpxchg_fail.
   wp_proj.
   wp_if.
-  (* exercise *)
-Admitted.
+  wp_load. wp_let. wp_cmpxchg_suc. wp_proj. wp_if. wp_load. wp_let.
+  wp_pure. done.
+Qed.
 
 (**
   We finish this section with a final remark about the points-to
@@ -357,7 +359,7 @@ Proof.
   (**
     When introducing equalities, we can immediately rewrite using it
     with [->] or [<-], depending on which direction we want to rewrite.
-  *)
+   *)
   iIntros "%w ->".
   (** And now we can evaluate the rest of the program. *)
   wp_pure.
@@ -588,7 +590,7 @@ Proof.
     We can now apply the [wp_par] specification. Note how we transfer
     ownership of [l1 ↦ #0] to the first thread, and [l2 ↦ #0] to the
     second. This allows each thread to perform its store operation.
-  *)
+   *)
   wp_apply (wp_par t1_post t2_post with "[Hl1] [Hl2]").
   (**
     We must now prove WP specifications for each thread, with the
