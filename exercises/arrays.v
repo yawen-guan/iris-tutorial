@@ -45,6 +45,31 @@ Definition copy : val :=
   the array.
 *)
 
+(* Yawen: prove by induction on [l1]. *)
+Lemma copy_to_spec' a1 a2 l1 l2 :
+  {{{a1 ↦∗ l1 ∗ a2 ↦∗ l2 ∗ ⌜length l1 = length l2⌝}}}
+    copy_to #a1 #a2 #(length l1)
+  {{{RET #(); a1 ↦∗ l1 ∗ a2 ↦∗ l1}}}.
+Proof.
+  revert a1 a2 l2.
+  iInduction l1 as [| x1 l1 IH];
+    iIntros (a1 a2 l2 Φ) "(H1 & H2 & %H) HΦ";
+    destruct l2 as [| x2 l2];
+    try done.
+  - wp_rec. wp_pures. iApply "HΦ". by iFrame.
+  - wp_rec. wp_pures.
+    rewrite !array_cons.
+    iDestruct "H1" as "[H1 Hl1]".
+    iDestruct "H2" as "[H2 Hl2]".
+    wp_load. wp_store. wp_pures. inversion H.
+    Search ((S _) - 1).
+    replace (#(S (length l1) - 1)) with #(length l1); cycle 1.
+    { replace (Z.sub (S (length l1)) 1) with (Z.of_nat (length l1)) by lia. reflexivity. }
+    wp_apply ("IH" with "[$Hl1 $Hl2]"); first by done.
+    iIntros "[Hl1 Hl2]".
+    iApply "HΦ". by iFrame.
+Qed.
+
 Lemma copy_to_spec a1 a2 l1 l2 :
   {{{a1 ↦∗ l1 ∗ a2 ↦∗ l2 ∗ ⌜length l1 = length l2⌝}}}
     copy_to #a1 #a2 #(length l1)
@@ -133,8 +158,20 @@ Lemma inc_spec a l :
     inc #a #(length l)
   {{{RET #(); a ↦∗ ((λ i : Z, #(i + 1)) <$> l)}}}.
 Proof.
-  (* exercise *)
-Admitted.
+  revert a.
+  iInduction l as [| x l].
+  - iIntros (a Φ) "H1 HΦ".
+    wp_rec. wp_pures. by iApply "HΦ".
+  - iIntros (a Φ) "H1 HΦ".
+    rewrite array_cons.
+    iDestruct "H1" as "[Ha H1]".
+    wp_rec. wp_pures. wp_load. wp_store. wp_pures.
+    rewrite Nat2Z.inj_succ Z.sub_1_r Z.pred_succ.
+    wp_apply ("IHl" with "H1").
+    rewrite fmap_cons. rewrite array_cons.
+    iIntros "Ha'". iApply "HΦ".
+    by iFrame.
+Qed.
 
 (* ================================================================= *)
 (** ** Reverse *)
@@ -166,6 +203,36 @@ Lemma reverse_spec a l :
   {{{RET #(); a ↦∗ rev l}}}.
 Proof.
   (* exercise *)
+  iLöb as "IH" forall (a l).
+  iIntros (Φ) "Hl HΦ".
+  wp_rec. wp_pures.
+  destruct (bool_decide_reflect (length l <= 1)%Z) as [H|H]; wp_pures.
+  - iApply "HΦ". destruct l as [| x l]; simpl in H.
+    + simpl. done.
+    + destruct l as [| x' l]; simpl in *; last by lia.  done.
+  - destruct l as [| x l]; simpl in H; first by lia.
+    rewrite !array_cons. iDestruct "Hl" as "[Ha Hl]".
+    wp_load. wp_pures.
+    rewrite Nat2Z.inj_succ Z.sub_1_r Z.pred_succ.
+
+
+
+  Restart.
+  revert a.
+  iInduction l as [| x l].
+  - iIntros (a Φ) "Ha HΦ".
+    wp_rec. wp_pures. simpl. by iApply "HΦ".
+  - iIntros (a Φ) "Ha HΦ".
+    wp_rec. wp_pures.
+    destruct (bool_decide_reflect (S (length l) ≤ 1)%Z) as [H|H].
+    + wp_pures.
+      change 1%Z with (Z.of_nat 1%nat) in H. apply Nat2Z.inj_le in H.
+      destruct l; simpl in *; last by lia.
+      by iApply "HΦ".
+    + wp_pures. rewrite !array_cons. iDestruct "Ha" as "[Ha Hl]".
+      wp_load. wp_pures.
+      rewrite Nat2Z.inj_succ Z.sub_1_r Z.pred_succ.
+
 Admitted.
 
 End proofs.
