@@ -13,7 +13,7 @@ Context `{!heapGS Σ}.
   formally with a predicate, which we denote [isList]. This predicate
   turns a list of values [xs] into a predicate describing the structure
   of the linked list.
-*)
+ *)
 Fixpoint isList (l : val) (xs : list val) : iProp Σ :=
   match xs with
   | [] => ⌜l = NONEV⌝
@@ -65,8 +65,16 @@ Proof.
     wp_pures.
     by iApply "HΦ".
   - (* Induction step: xs = x :: xs' *)
-    (* exercise *)
-Admitted.
+    iIntros (l Φ) "(%hd & %l' & -> & Hhd & Htl) HΦ".
+    wp_rec. wp_pures.
+    wp_load. wp_pures.
+    wp_load. wp_pures.
+    wp_store. iApply (IH with "Htl").
+    iNext.
+    iIntros "Htl".
+    iApply "HΦ".
+    iExists hd, l'. iFrame. done.
+Qed.
 
 (**
   The append function recursively descends [l1], updating the links.
@@ -97,8 +105,14 @@ Lemma append_spec (l1 l2 : val) (xs ys : list val) :
 Proof.
   revert ys l1 l2.
   induction xs as [| x xs' IH]; simpl.
-  (* exercise *)
-Admitted.
+  - iIntros (ys l1 l2 Φ) "(-> & Hl2) HΦ".
+    wp_rec. wp_pures. iApply "HΦ". done.
+  - iIntros (ys l1 l2 Φ) "((%hd & %l' & -> & Hhd & Hl') & Hl2) HΦ".
+    wp_rec. wp_pures. wp_load. wp_pures. wp_load. wp_pures.
+    wp_apply (IH with "[$Hl' $Hl2]").
+    iIntros (l) "Hl".
+    wp_pures. wp_store. wp_pures. iApply "HΦ". iExists hd, l. by iFrame.
+Qed.
 
 (**
   We will implement reverse using a helper function called
@@ -129,9 +143,14 @@ Lemma reverse_append_spec (l acc : val) (xs ys : list val) :
   {{{ v, RET v; isList v (rev xs ++ ys) }}}.
 Proof.
   revert l acc ys.
-  induction xs as [| x xs' IH]; simpl.
-  (* exercise *)
-Admitted.
+  induction xs as [| x xs' IH]; simpl; iIntros (l acc ys Φ).
+  - iIntros "[-> Hacc] HΦ".
+    wp_rec. wp_pures. iApply "HΦ". by iFrame.
+  - iIntros "[(%hd & %l' & -> & Hhd & Hl') Hacc] HΦ".
+    wp_rec. wp_pures. wp_load. wp_pures. wp_load. wp_pures. wp_store.
+    wp_apply (IH _ _ (x::ys) with "[Hl' Hhd Hacc]"); first by iFrame.
+    rewrite -app_assoc. iApply "HΦ".
+Qed.
 
 (**
   Now, we use the specification of [reverse_append] to prove the
@@ -142,8 +161,11 @@ Lemma reverse_spec (l : val) (xs : list val) :
     reverse l
   {{{ v, RET v; isList v (rev xs) }}}.
 Proof.
-  (* exercise *)
-Admitted.
+  iIntros (Φ) "H HΦ".
+  wp_lam. wp_pures.
+  wp_apply (reverse_append_spec _ _ _ [] with "[H]"); first by iFrame.
+  rewrite app_nil_r. by iFrame.
+Qed.
 
 (**
   The specifications thus far have been rather straightforward. Now we

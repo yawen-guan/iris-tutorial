@@ -13,7 +13,7 @@ Notation "'Pure' '┆' P" :=
     (in custom sep at level 200,
      P constr at level 200).
 
-Notation "'PointsTo' '┆' l '┆' 'PlainPointsTo' '┆' dq '┆' v" :=
+Notation "'PointsTo' '┆' l '┆' v '┆' dq " :=
   (pointsto l dq v)
     (in custom sep at level 200,
      l constr at level 200,
@@ -69,12 +69,12 @@ Notation "'⟦' e '⟧'" :=
   (e)
     (e custom val at level 200, at level 0).
 
-Notation "'LITV' '┆' v " :=
+Notation "'$LitV' '┆' v " :=
   (LitV v)
     (in custom val at level 200,
      v constr at level 200).
 
-Notation "'PAIRV' '┆' v1 '┆' v2" :=
+Notation "'$PairV' '┆' v1 '┆' v2" :=
   (PairV v1 v2)
     (in custom val at level 200,
      v1 constr at level 200,

@@ -78,18 +78,30 @@ Proof.
 
 (** ** File-specific sepviz notations *)
 
-Notation "'PointsTo' '┆' p '┆' 'isQueue' '┆' x" :=
+Notation "'PointsTo' '┆' p '┆' '⟦' '$isQueue' '┆' x '⟧'" :=
   (isQueue p x)
     (in custom sep at level 200,
      p constr at level 200,
      x constr at level 200).
 
-Notation "'PointsTo' '┆' p '┆' 'isListSeg' '┆' x '┆' y" :=
+Notation "'PointsTo' '┆' p '┆' '⟦' '$isListSeg' '┆' x '┆' y '⟧'" :=
   (isListSeg p x y)
     (in custom sep at level 200,
      p constr at level 200,
      x constr at level 200,
      y constr at level 200).
+
+Notation "'$list_app' '┆' x1 '┆' x2 " :=
+  (app x1 x2)
+    (in custom val at level 200,
+     x1 constr at level 200,
+     x2 constr at level 200).
+
+Notation "'$list_cons' '┆' x1 '┆' x2 " :=
+  (cons x1 x2)
+    (in custom val at level 200,
+     x1 constr at level 200,
+     x2 constr at level 200).
 
 (*||*)
 

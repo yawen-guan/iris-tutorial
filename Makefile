@@ -8,6 +8,8 @@ COQDOCFLAGS:= \
   --with-header $(EXTRA_DIR)/header.html --with-footer $(EXTRA_DIR)/footer.html
 export COQDOCFLAGS
 
+COQ_FLAGS := -Q theories solutions -Q exercises exercises
+
 all: Makefile.coq
 	+make -f Makefile.coq all
 .PHONY: all
@@ -31,19 +33,27 @@ exercises: $(EXERCISES)
 
 SEPVIZ_OUT_DIR := _sepviz_build
 SEPVIZ_MODULES := queue
-# SEPVIZ_HTMLS   := $(addprefix $(SEPVIZ_OUT_DIR)/,$(addsuffix .html,$(SEPVIZ_MODULES)))
 SEPVIZ_HTMLS   := $(SEPVIZ_OUT_DIR)/Iris-Queue.html
+
+ALECTRYON_FLAGS := \
+  $(COQ_FLAGS) \
+  --webpage-style windowed \
+  --coq-driver sertop \
+  --long-line-threshold 0
 
 $(SEPVIZ_OUT_DIR):
 	mkdir -p $@
 
 $(SEPVIZ_OUT_DIR)/Iris-Queue.html: theories/queue.v
-	alectryon $(COQFLAGS) --output $@ $<
+	alectryon $(ALECTRYON_FLAGS) --output $@ $<
 
 # $(SEPVIZ_OUT_DIR)/%.html: theories/%.v
 # 	alectryon $(COQFLAGS) --output $@ $<
 
 sepviz: $(SEPVIZ_HTMLS)
+
+sepviz-clean:
+	rm -rf $(SEPVIZ_OUT_DIR)
 
 $(EXERCISES): exercises/%.v: theories/%.v gen-exercises.awk
 	@if test -f $@ && ! git diff --exit-code $@ >/dev/null; then \
