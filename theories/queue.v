@@ -103,6 +103,12 @@ Notation "'$list_cons' '┆' x1 '┆' x2 " :=
      x1 constr at level 200,
      x2 constr at level 200).
 
+
+Notation "Γ '⟬*' 'PRE' '@' H ':' P '*⟭'" := (environments.Esnoc Γ (INamed H) P%I)
+  (at level 1, P at level 200,
+  left associativity, format "Γ '⟬*'  'PRE'  '@'  H  ':'  P  '*⟭' '//'", only printing) : proof_scope.
+
+
 (*||*)
 
 Lemma transfer_spec (L1 L2 : list val) (p1 p2 : loc) :

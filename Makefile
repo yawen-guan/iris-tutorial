@@ -17,6 +17,7 @@ all: Makefile.coq
 clean: Makefile.coq
 	+make -f Makefile.coq clean
 	rm -f Makefile.coq
+	+make clean-sepviz
 .PHONY: clean
 
 html: Makefile.coq _CoqProject
@@ -38,7 +39,6 @@ SEPVIZ_HTMLS   := $(SEPVIZ_OUT_DIR)/Iris-Queue.html
 ALECTRYON_FLAGS := \
   $(COQ_FLAGS) \
   --webpage-style windowed \
-  --coq-driver sertop \
   --long-line-threshold 0
 
 $(SEPVIZ_OUT_DIR):
@@ -52,8 +52,9 @@ $(SEPVIZ_OUT_DIR)/Iris-Queue.html: theories/queue.v
 
 sepviz: $(SEPVIZ_HTMLS)
 
-sepviz-clean:
+clean-sepviz:
 	rm -rf $(SEPVIZ_OUT_DIR)
+.PHONY: clean-sepviz
 
 $(EXERCISES): exercises/%.v: theories/%.v gen-exercises.awk
 	@if test -f $@ && ! git diff --exit-code $@ >/dev/null; then \

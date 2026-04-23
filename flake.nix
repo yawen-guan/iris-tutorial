@@ -2,7 +2,7 @@
   description = "A nix-flake-based rocq development environment with iris";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     alectryon-src = {
       url = "github:cpitclaudel/alectryon/v2.0.0";
@@ -50,6 +50,9 @@
               '';
               doCheck = false;
             };
+            vsrocq-language-server-8_20 = final.rocqPackages.vsrocq-language-server.override {
+              coq = final.coqPackages_8_20.coq;
+            };
           };
           pkgs = import nixpkgs {
             inherit system;
@@ -62,9 +65,11 @@
               (with pkgs.coqPackages_8_20; [
                 coq
                 iris
-                serapi
               ])
-              ++ (with pkgs; [ alectryon ])
+              ++ (with pkgs; [
+                alectryon
+                vsrocq-language-server-8_20
+              ])
             );
           };
         }
