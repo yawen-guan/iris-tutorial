@@ -1,3 +1,7 @@
+(*|
+.. coq:: none
+|*)
+
 From iris.heap_lang Require Import lang proofmode notation.
 
 Require Import solutions.sepviz_notations.
@@ -262,6 +266,9 @@ Definition fold_right : val :=
   closed under universal quantification. Hence, in the proof, the
   assumption for [f] will move into the persistent context.
 *)
+
+(*||*)
+
 Lemma fold_right_spec P I (f a l : val) xs :
   {{{
     isList l xs ∗ ([∗ list] x ∈ xs, P x) ∗ I [] a ∗
@@ -296,6 +303,11 @@ Proof.
     iExists hd, l'.
     by iFrame.
 Qed.
+
+(*|
+.. coq:: none
+|*)
+
 (* END SOLUTION BEGIN TEMPLATE
   (* exercise *)
 Admitted.
